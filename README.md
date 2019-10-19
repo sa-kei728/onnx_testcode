@@ -39,11 +39,14 @@ conda activate py36
 ### 4. install package
 ```
 conda install -c menpo opencv=3.4.2 cudatoolkit=9.0.0 cudnn=7.1.2
+conda install scikit-learn
 ```
 
 ### 5. install onnx(ref <https://github.com/onnx/onnx/blob/master/README.md>)
 ```
 conda install -c conda-forge onnx
+conda install -c conda-forge protobuf numpy
+conda install -c anaconda mxnet
 ```
 
 ### 6. install pytorch and caffe2(ref <https://github.com/pytorch/pytorch/blob/master/README.md>)
