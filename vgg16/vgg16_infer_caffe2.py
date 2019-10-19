@@ -8,6 +8,7 @@ import skimage.transform
 import cv2
 import argparse
 import numpy as np
+import scipy
 
 #argparse
 parser = argparse.ArgumentParser(
@@ -18,6 +19,13 @@ parser = argparse.ArgumentParser(
             )
 parser.add_argument('-op', '--operator', required=True)
 args = parser.parse_args()
+
+# Normalization
+def Normalization(x, mean, std):
+    x_norm = x
+    for shape in range(x.ndim):
+        x_norm[shape] = (x[shape] - mean[shape])/std[shape]
+    return x_norm
 
 #VGG16 base input shape
 width   = 224
@@ -34,16 +42,13 @@ height  = 224
 # The transformation should preferrably happen at preprocessing. Check imagenet_preprocess.py for code.
 if args.operator == "skimage":
     img = skimage.img_as_float(skimage.io.imread('kitten.jpg'))
-    img *= 255
     img = skimage.transform.resize(img, (width, height)).astype(np.float32)
-    # check image(saving)
-    skimage.io.imsave('kitten_resize.bmp', img)
-
+    img = Normalization(img, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 elif args.operator == "opencv":
     img = cv2.imread('kitten.jpg').astype(np.float32)
+    img /= 255
     img = cv2.resize(img, (width, height)).astype(np.float32)
-    # check image(saving)
-    cv2.imwrite('kitten_resize.bmp', img)
+    img = Normalization(img, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 else:
     assert False
 
@@ -57,6 +62,7 @@ model = onnx.load('vgg16.onnx')
 # Run the ONNX model with Caffe2
 predict = caffe2.python.onnx.backend.run_model(model, [img4run])
 predict = np.squeeze(predict["vgg0_dense2_fwd"])
+predict = scipy.special.softmax(predict)
 ranking = np.argsort(predict)[::-1]
 
 with open('synset.txt') as f:
