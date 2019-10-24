@@ -3,3 +3,12 @@
 *.bmp
 *.pb
 *.onnx
+*.png
+*.npy
+*.json
+*.dot
+*.ckpt*
+*.caffemodel
+*.prototxt
+checkpoint
+MMdnn_test
