@@ -12,3 +12,5 @@
 *.prototxt
 checkpoint
 MMdnn_test
+*.dict
+*.params
